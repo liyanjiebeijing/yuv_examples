@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.18)
 project(rgb_to_yuv422)
 
 set(OpenCV_DIR "/build_env/x86/thirdparty/opencv/lib/cmake/opencv4/")
