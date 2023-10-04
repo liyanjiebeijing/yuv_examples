@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
         // cv::imwrite("rgb_image.png", rgbImage);
 
         //save yuv 422 image
-        auto dest_path = dst_yuv_img_dir + name + ".bin";
+        auto dest_path = dst_yuv_img_dir + "/" + name + ".bin";
         ofstream outfile(dest_path.c_str(), std::ios::binary);
         if(!outfile){
             std::cerr<<"failed to write yuv422 image"<<endl;
