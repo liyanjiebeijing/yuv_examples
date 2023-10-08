@@ -92,7 +92,7 @@ cv::Mat bgr2yuv(const cv::Mat& bgrImage){
 
             rgb2yuv(R1, G1, B1, y1, u1, v1);
             rgb2yuv(R2, G2, B2, y2, u2, v2);
-            yuv422_data[0] = u2;
+            yuv422_data[0] = u1;
             yuv422_data[1] = y1;
             yuv422_data[2] = v1;
             yuv422_data[3] = y2;
