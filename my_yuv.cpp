@@ -67,6 +67,71 @@ cv::Mat yuv2bgr(const cv::Mat& yuv_img){
 }
 
 
+
+cv::Mat yuv422_planar2bgr(const cv::Mat& yuv_img){
+    // 保存 YUV422(UYVY) 格式图像
+    cv::Mat bgr_img(yuv_img.rows, yuv_img.cols, CV_8UC3);
+    unsigned char* y_data = (unsigned char*)yuv_img.data;
+    unsigned char* u_data = (unsigned char*)yuv_img.data + yuv_img.rows * yuv_img.cols;
+    unsigned char* v_data = (unsigned char*)yuv_img.data + yuv_img.rows * yuv_img.cols / 2 * 3;
+    unsigned char* bgr_data = (unsigned char*)bgr_img.data;
+
+    for (int i = 0; i < yuv_img.rows; i++) {
+        for (int j = 0; j < yuv_img.cols; j += 2) {
+            unsigned char u  = u_data[0];
+            unsigned char y1 = y_data[0];
+            unsigned char v  = v_data[0];
+            unsigned char y2 = y_data[1];
+            yuv2rgb(y1, u, v, bgr_data[2], bgr_data[1], bgr_data[0]);
+            yuv2rgb(y2, u, v, bgr_data[5], bgr_data[4], bgr_data[3]);
+
+            bgr_data += 6;
+            y_data += 2;
+            v_data++;
+            u_data++;
+        }
+    }
+
+    return bgr_img;
+}
+
+
+
+cv::Mat yuv420_planar2bgr(const cv::Mat& yuv_img){
+    // 保存 YUV422(UYVY) 格式图像
+    cv::Mat bgr_img(yuv_img.rows, yuv_img.cols, CV_8UC3);
+    unsigned char* u_data = (unsigned char*)yuv_img.data + yuv_img.rows * yuv_img.cols;
+    unsigned char* v_data = (unsigned char*)yuv_img.data + yuv_img.rows * yuv_img.cols / 4 * 5;
+
+    for (int i = 0; i < yuv_img.rows; i += 2) {
+        unsigned char* y_data = (unsigned char*)yuv_img.data + yuv_img.cols * i;
+        unsigned char* bgr_data = (unsigned char*)bgr_img.data + yuv_img.cols * i * 3;
+
+        for (int j = 0; j < yuv_img.cols; j += 2) {
+            unsigned char y1 = y_data[0];
+            unsigned char y2 = y_data[1];
+            unsigned char y3 = y_data[yuv_img.cols];
+            unsigned char y4 = y_data[yuv_img.cols + 1];
+            unsigned char u  = u_data[0];
+            unsigned char v  = v_data[0];
+
+            yuv2rgb(y1, u, v, bgr_data[2], bgr_data[1], bgr_data[0]);
+            yuv2rgb(y2, u, v, bgr_data[5], bgr_data[4], bgr_data[3]);
+            unsigned char *bgr_data_next_line = bgr_data + 3 * yuv_img.cols;
+            yuv2rgb(y3, u, v, bgr_data_next_line[2], bgr_data_next_line[1], bgr_data_next_line[0]);
+            yuv2rgb(y4, u, v, bgr_data_next_line[5], bgr_data_next_line[4], bgr_data_next_line[3]);
+
+            bgr_data += 6;
+            y_data += 2;
+            v_data++;
+            u_data++;
+        }
+    }
+
+    return bgr_img;
+}
+
+
 cv::Mat bgr2yuv(const cv::Mat& bgrImage){
     // 创建 YUV422(UYVY) 图像
     cv::Mat yuv_422(bgrImage.rows, bgrImage.cols, CV_8UC2);
@@ -104,3 +169,46 @@ cv::Mat bgr2yuv(const cv::Mat& bgrImage){
 
     return yuv_422;
 }
+
+
+
+cv::Mat opencv_bgr2yuv(const cv::Mat& bgrImage){
+    //RGB 转YUV
+    cv::Mat yuv;
+    cv::cvtColor(bgrImage, yuv, cv::COLOR_BGR2YUV);
+
+    // 创建 YUV422(UYVY) 图像
+    cv::Mat yuv_422(bgrImage.rows, bgrImage.cols, CV_8UC2);
+
+    // 保存 YUV422(UYVY) 格式图像
+    unsigned char* yuv_data = (unsigned char*)yuv.data;
+    unsigned char* yuv422_data = (unsigned char*)yuv_422.data;
+    for (int i = 0; i < bgrImage.rows; i++) {
+        for (int j = 0; j < bgrImage.cols; j += 2) {
+            unsigned char y1 = yuv_data[0];
+            unsigned char u1 = yuv_data[1];
+            unsigned char v1 = yuv_data[2];
+            unsigned char y2 = yuv_data[3];
+            unsigned char u2 = yuv_data[4];
+            unsigned char v2 = yuv_data[5];
+            yuv422_data[0] = u1;
+            yuv422_data[1] = y1;
+            yuv422_data[2] = v1;
+            yuv422_data[3] = y2;
+            yuv_data += 6;
+            yuv422_data += 4;
+        }
+    }
+
+    return yuv_422;
+}
+
+
+cv::Mat opencv_yuv2bgr(const cv::Mat& yuv_img){
+    cv::Mat bgr_img;
+    cv::cvtColor(yuv_img, bgr_img, cv::COLOR_YUV2BGR_Y422);
+    return bgr_img;
+}
+
+
+
