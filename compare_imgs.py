@@ -56,7 +56,7 @@ def main():
     diff_img = cv2.resize(diff_img, (dst_img_w, dst_img_h))
     # add_text(img_first, "opencv_yuv2bgr")
     # add_text(img_second, "my_yuv2bgr")
-    add_text(diff_img, "diff")
+    add_text(diff_img, "diff * 10")
 
     cv2.imwrite(compare_path, np.hstack((img_first, img_second, diff_img)))
     print(f"save compare img to {compare_path}")

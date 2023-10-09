@@ -96,28 +96,27 @@ cv::Mat yuv422_planar2bgr(const cv::Mat& yuv_img){
 }
 
 
+cv::Mat yuv420_planar2bgr(const std::vector<unsigned char>& yuv, int img_h, int img_w){
+    const unsigned char* yuv_data = &yuv[0];
+    cv::Mat bgr_img(img_h, img_w, CV_8UC3);
+    const unsigned char* u_data = yuv_data + img_h * img_w;
+    const unsigned char* v_data = yuv_data + img_h * img_w / 4 * 5;
 
-cv::Mat yuv420_planar2bgr(const cv::Mat& yuv_img){
-    // 保存 YUV422(UYVY) 格式图像
-    cv::Mat bgr_img(yuv_img.rows, yuv_img.cols, CV_8UC3);
-    unsigned char* u_data = (unsigned char*)yuv_img.data + yuv_img.rows * yuv_img.cols;
-    unsigned char* v_data = (unsigned char*)yuv_img.data + yuv_img.rows * yuv_img.cols / 4 * 5;
+    for (int i = 0; i < img_h; i += 2) {
+        const unsigned char* y_data = yuv_data + img_w * i;
+        unsigned char* bgr_data = (unsigned char*)bgr_img.data + img_w * i * 3;
 
-    for (int i = 0; i < yuv_img.rows; i += 2) {
-        unsigned char* y_data = (unsigned char*)yuv_img.data + yuv_img.cols * i;
-        unsigned char* bgr_data = (unsigned char*)bgr_img.data + yuv_img.cols * i * 3;
-
-        for (int j = 0; j < yuv_img.cols; j += 2) {
+        for (int j = 0; j < img_w; j += 2) {
             unsigned char y1 = y_data[0];
             unsigned char y2 = y_data[1];
-            unsigned char y3 = y_data[yuv_img.cols];
-            unsigned char y4 = y_data[yuv_img.cols + 1];
+            unsigned char y3 = y_data[img_w];
+            unsigned char y4 = y_data[img_w + 1];
             unsigned char u  = u_data[0];
             unsigned char v  = v_data[0];
 
             yuv2rgb(y1, u, v, bgr_data[2], bgr_data[1], bgr_data[0]);
             yuv2rgb(y2, u, v, bgr_data[5], bgr_data[4], bgr_data[3]);
-            unsigned char *bgr_data_next_line = bgr_data + 3 * yuv_img.cols;
+            unsigned char *bgr_data_next_line = bgr_data + 3 * img_w;
             yuv2rgb(y3, u, v, bgr_data_next_line[2], bgr_data_next_line[1], bgr_data_next_line[0]);
             yuv2rgb(y4, u, v, bgr_data_next_line[5], bgr_data_next_line[4], bgr_data_next_line[3]);
 

@@ -31,8 +31,8 @@ int main(int argc, char* argv[]) {
     }
     infile.seekg(0, std::ios::beg);
 
-    std::vector<char> yuv_data(fileSize, 0);
-    infile.read(yuv_data.data(), fileSize);
+    std::vector<unsigned char> yuv_data(fileSize, 0);
+    infile.read((char*)yuv_data.data(), fileSize);
 
     //获取图像的宽高（假设宽高比是16:9）
     double square_value = fileSize / 1.5 / 16 / 9;
@@ -41,11 +41,7 @@ int main(int argc, char* argv[]) {
     int img_w = unit_len * 16;
 
     //my yuv to RGB
-    cv::Mat yuv_img(img_h, img_w, CV_8UC2, yuv_data.data());
-    cv::Mat my_bgr_img = yuv420_planar2bgr(yuv_img);
-
-    cv::Mat y_img(img_h, img_w, CV_8UC1, yuv_data.data());
-    cv::imwrite((yuv_img_path + "_gray.png").c_str(), y_img);
+    cv::Mat my_bgr_img = yuv420_planar2bgr(yuv_data, img_h, img_w);
 
     //save result
     cv::imwrite((yuv_img_path + "_my_yuv_planar2bgr.png").c_str(), my_bgr_img);
